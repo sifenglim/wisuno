@@ -75,6 +75,10 @@ async function init() {
 	domainList = document.querySelector('.domain-list');
 	statusText = document.querySelector('.status-text');
 
+	// Fetch Client IP
+	const ipInfoEl = document.getElementById('client-ip-info');
+	if (ipInfoEl) fetchClientInfo(ipInfoEl);
+
 	// Start all checks in parallel
 	const checkPromises = CONFIG.domains.map((d) => checkDomain(d));
 
@@ -108,9 +112,11 @@ async function init() {
 		}
 	} else {
 		// No successful connections
-		if (statusText) {
-			statusText.textContent = '无法连接到任何节点，请稍后重试';
-			statusText.style.color = '#ef4444';
+		if (statusText) statusText.style.display = 'none';
+
+		const errorModule = document.getElementById('error-module');
+		if (errorModule) {
+			errorModule.style.display = 'flex';
 		}
 	}
 }
@@ -190,8 +196,33 @@ function getTextForLatency(latency) {
 	return '拥堵';
 }
 
+// ...existing code...
 function sanitizeId(url) {
 	return url.replace(/[^a-z0-9]/gi, '');
+}
+
+async function fetchClientInfo(element) {
+	element.textContent = '正在获取客户端信息...';
+	try {
+		const response = await fetch('https://ipapi.co/json/');
+		if (!response.ok) throw new Error('IP API failed');
+
+		const data = await response.json();
+		const locationStr = [data.city, data.country_name]
+			.filter(Boolean)
+			.join(', ');
+
+		// Show IP and Location
+		// Using a gentle accent color for the IP to make it stand out slightly
+		element.innerHTML = `
+            <span style="opacity:0.8;">当前 IP:</span> 
+            <span style="color:var(--accent-color); font-family:monospace; font-size:1em;">${data.ip}</span>
+            <span style="opacity:0.8;">${locationStr ? `&nbsp;@ ${locationStr}` : ''}</span>
+        `;
+	} catch (error) {
+		console.warn('IP fetch failed:', error);
+		element.textContent = ''; // Fail silently
+	}
 }
 
 // Boot

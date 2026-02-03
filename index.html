@@ -33,8 +33,17 @@
         <div class="domain-list">
           <!-- JS Injected Content -->
         </div>
+        <!-- Error Module (Hidden by default) -->
+        <div id="error-module" class="error-module">
+          <div class="error-icon">⚠️</div>
+          <h3>网络连接异常</h3>
+          <p>无法连接到任何节点，请检查您的网络设置。</p>
+          <button onclick="location.reload()" class="retry-btn">重新检测</button>
+        </div>
       </div>
       <div class="footer">
+        <div id="client-ip-info"
+             style="margin-bottom: 0.8rem; font-size: 0.85rem; font-weight: 500; min-height: 1.2em;"></div>
         <p>如长时间未跳转，请手动点击上方列表。</p>
         <p style="margin-top:0.5rem;opacity:0.6;">&copy; Wisuno Technology Group</p>
       </div>
