@@ -1,14 +1,10 @@
 /**
  * Wisuno Domain Redirector
- * Intelligent routing logic
+ * Intelligent routing logic - Top 2 Fastest Routes
  */
 
 const CONFIG = {
 	domains: [
-		{
-			url: 'https://mywisuno.com',
-			label: 'mywisuno.com',
-		},
 		{
 			url: 'https://wisunoportal.com',
 			label: 'wisunoportal.com',
@@ -16,6 +12,10 @@ const CONFIG = {
 		{
 			url: 'https://wisunoit.com',
 			label: 'wisunoit.com',
+		},
+		{
+			url: 'https://mywisuno.com',
+			label: 'mywisuno.com',
 		},
 		{
 			url: 'https://wisunonet.com',
@@ -38,6 +38,7 @@ const state = {
 };
 
 // UI Elements
+let loaderContainer;
 let domainList;
 let statusText;
 
@@ -69,22 +70,49 @@ async function checkDomain(domain) {
 /**
  * Initialize
  */
-function init() {
+async function init() {
+	loaderContainer = document.querySelector('.loader-container');
 	domainList = document.querySelector('.domain-list');
 	statusText = document.querySelector('.status-text');
 
-	renderListSkeleton();
+	// Start all checks in parallel
+	const checkPromises = CONFIG.domains.map((d) => checkDomain(d));
 
-	CONFIG.domains.forEach((d) => {
-		checkDomain(d).then((res) => {
-			updateDomainUI(res);
+	// Wait for all to complete
+	const results = await Promise.all(checkPromises);
 
-			// Auto Redirect Logic
-			if (res.success && window.WISUNO_CONFIG?.autoRedirect) {
-				handleAutoRedirect(res.domain);
-			}
-		});
-	});
+	// Filter successful and sort by latency
+	const successfulResults = results
+		.filter((r) => r.success)
+		.sort((a, b) => a.latency - b.latency);
+
+	// Take top 2
+	const topTwo = successfulResults.slice(0, 2);
+
+	// Hide loading
+	if (loaderContainer) loaderContainer.style.display = 'none';
+
+	// Render only top 2
+	if (topTwo.length > 0) {
+		renderTopDomains(topTwo);
+
+		// Show list
+		if (domainList) {
+			domainList.style.display = 'flex';
+			domainList.classList.add('visible');
+		}
+
+		// Auto redirect logic (if enabled)
+		if (window.WISUNO_CONFIG?.autoRedirect) {
+			handleAutoRedirect(topTwo[0].domain);
+		}
+	} else {
+		// No successful connections
+		if (statusText) {
+			statusText.textContent = '无法连接到任何节点，请稍后重试';
+			statusText.style.color = '#ef4444';
+		}
+	}
 }
 
 function handleAutoRedirect(domain) {
@@ -117,75 +145,49 @@ function handleAutoRedirect(domain) {
 			statusText.textContent = `已在新窗口打开 ${domain.label}`;
 			statusText.style.color = '#4ade80';
 		}
-	}, 1000);
+	}, 800);
 }
 
-function renderListSkeleton() {
+function renderTopDomains(topResults) {
 	if (!domainList) return;
-	domainList.innerHTML = CONFIG.domains
-		.map(
-			(d) => `
+
+	domainList.innerHTML = topResults
+		.map((result, index) => {
+			const d = result.domain;
+			const color = getColorForLatency(result.latency);
+			const text = getTextForLatency(result.latency);
+
+			return `
         <a href="${d.url}" target="_blank" rel="noopener noreferrer" class="domain-item" id="item-${sanitizeId(d.url)}">
             <div class="domain-info">
                 <span class="domain-name">${d.label}</span>
             </div>
             <div class="domain-status-container" style="display:flex;align-items:center;gap:12px;">
-                <span class="latency-badge" id="latency-${sanitizeId(d.url)}" style="font-size:0.85rem; display:flex; align-items:center;">
-                    <span style="opacity:0.5; margin-right:4px;">检测中...</span>
+                <span class="latency-badge" style="font-size:0.85rem; display:flex; align-items:center;">
+                    <span style="opacity:0.7; font-size:0.9em; margin-right:8px;">${result.latency}ms</span>
+                    <span style="color:${color}; font-weight:600;">${text}</span>
                 </span>
-                <div class="domain-status" id="status-${sanitizeId(d.url)}" style="background-color:#666;"></div>
+                <div class="domain-status" style="background-color:${color}; box-shadow: 0 0 8px ${color};"></div>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.3"><path d="M9 18l6-6-6-6"/></svg>
             </div>
         </a>
-    `
-		)
+    `;
+		})
 		.join('');
 }
 
-function updateDomainUI(result) {
-	const id = sanitizeId(result.domain.url);
-	const statusEl = document.getElementById(`status-${id}`);
-	const latencyEl = document.getElementById(`latency-${id}`);
-	const itemEl = document.getElementById(`item-${id}`);
+function getColorForLatency(latency) {
+	if (latency <= 500) return '#4ade80'; // Green - Fast
+	if (latency <= 1200) return '#facc15'; // Yellow - Good
+	if (latency <= 3000) return '#fb923c'; // Orange - Slow
+	return '#f87171'; // Red - Poor
+}
 
-	if (!statusEl) return;
-
-	if (result.success) {
-		let color = '#4ade80'; // Green - Fast
-		let text = '极快';
-
-		if (result.latency > 500) {
-			color = '#facc15'; // Yellow - Good
-			text = '良好';
-		}
-		if (result.latency > 1200) {
-			color = '#fb923c'; // Orange - Slow
-			text = '一般';
-		}
-		if (result.latency > 3000) {
-			color = '#f87171'; // Red - Poor
-			text = '拥堵';
-		}
-
-		statusEl.style.backgroundColor = color;
-		statusEl.style.boxShadow = `0 0 8px ${color}`;
-
-		latencyEl.innerHTML = `
-            <span style="opacity:0.7; font-size:0.9em; margin-right:8px;">${result.latency}ms</span>
-            <span style="color:${color}; font-weight:600;">${text}</span>
-        `;
-	} else {
-		statusEl.style.backgroundColor = '#ef4444'; // Red
-		statusEl.style.boxShadow = 'none';
-
-		latencyEl.innerHTML = `<span style="color:#ef4444;">无法连接</span>`;
-
-		if (itemEl) {
-			itemEl.style.opacity = '0.5';
-			itemEl.style.cursor = 'not-allowed';
-			itemEl.onclick = (e) => e.preventDefault();
-		}
-	}
+function getTextForLatency(latency) {
+	if (latency <= 500) return '极快';
+	if (latency <= 1200) return '良好';
+	if (latency <= 3000) return '一般';
+	return '拥堵';
 }
 
 function sanitizeId(url) {

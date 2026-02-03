@@ -31,6 +31,7 @@ body {
 
 .container {
 	width: 100%;
+	height: 100%;
 	max-width: 480px;
 	padding: 2rem;
 	text-align: center;
@@ -40,6 +41,9 @@ body {
 
 /* Glassmorphism Card Effect */
 .glass-panel {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
 	background: var(--card-bg);
 	backdrop-filter: blur(12px);
 	-webkit-backdrop-filter: blur(12px);
@@ -66,8 +70,18 @@ body {
 	margin-bottom: 2.5rem;
 }
 
+/* Content Area - Fills remaining space */
+.content {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	min-height: 0;
+}
+
 /* Loading Animation */
 .loader-container {
+	flex: 1;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -101,7 +115,7 @@ body {
 	margin-top: 0.5rem;
 
 	/* Scroll support */
-	max-height: 50vh;
+	flex: 1;
 	overflow-y: auto;
 	padding-right: 0.5rem;
 	scrollbar-width: thin;
@@ -164,6 +178,18 @@ body {
 	font-size: 0.75rem;
 	color: var(--text-secondary);
 	margin-top: 0.25rem;
+}
+
+.recommended-badge {
+	display: inline-block;
+	background: var(--accent-color);
+	color: #000;
+	font-size: 0.7rem;
+	font-weight: 700;
+	padding: 0.15rem 0.5rem;
+	border-radius: 4px;
+	margin-top: 0.3rem;
+	letter-spacing: 0.5px;
 }
 
 .domain-status {
