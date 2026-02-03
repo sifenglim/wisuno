@@ -97,7 +97,8 @@ body {
 	display: none;
 	flex-direction: column;
 	gap: 1rem;
-	margin-top: 1rem;
+	padding-top: 0.5rem;
+	margin-top: 0.5rem;
 
 	/* Scroll support */
 	max-height: 50vh;

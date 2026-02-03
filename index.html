@@ -26,7 +26,7 @@
         <div class="subtitle">全球智能线路选择</div>
       </header>
       <div class="content">
-        <div class="status-text" style="margin-bottom: 1rem;">正在检测全网线路质量...</div>
+        <div class="status-text">正在检测全网线路质量...</div>
         <div class="domain-list visible" style="display: flex;">
           <!-- JS Injected Content -->
         </div>
@@ -39,7 +39,8 @@
   </div>
   <!-- Logic -->
   <script>
-    window.WISUNO_CONFIG = { autoRedirect: false };
+    // Enable Auto Redirect for this entry point
+    window.WISUNO_CONFIG = { autoRedirect: true };
   </script>
   <script src="/js/main.js"></script>
 </body>
