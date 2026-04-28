@@ -31,6 +31,11 @@ const CONFIG = {
 		},
 		{url: 'https://wisunohub.com', label: 'wisunohub.com'},
 	],
+	// IP 直连，仅在所有域名失败时显示
+	ipFallback: {
+		url: 'http://54.254.160.211',
+		label: '54.254.160.211',
+	},
 };
 
 const state = {
@@ -111,12 +116,22 @@ async function init() {
 			handleAutoRedirect(topTwo[0].domain);
 		}
 	} else {
-		// No successful connections
-		if (statusText) statusText.style.display = 'none';
-
-		const errorModule = document.getElementById('error-module');
-		if (errorModule) {
-			errorModule.style.display = 'flex';
+		// 所有域名失败，尝试 IP 直连
+		const ipResult = await checkDomain(CONFIG.ipFallback);
+		if (ipResult.success) {
+			renderTopDomains([ipResult]);
+			if (domainList) {
+				domainList.style.display = 'flex';
+				domainList.classList.add('visible');
+			}
+			if (window.WISUNO_CONFIG?.autoRedirect) {
+				handleAutoRedirect(CONFIG.ipFallback);
+			}
+		} else {
+			// IP 也失败，显示错误
+			if (statusText) statusText.style.display = 'none';
+			const errorModule = document.getElementById('error-module');
+			if (errorModule) errorModule.style.display = 'flex';
 		}
 	}
 }
