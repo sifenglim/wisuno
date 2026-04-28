@@ -30,6 +30,7 @@ const CONFIG = {
 			label: 'wisunodev.com',
 		},
 		{url: 'https://wisunohub.com', label: 'wisunohub.com'},
+		{url: 'https://wisunoportal1.com', label: 'wisunoportal1.com'},
 	],
 	// IP 直连，仅在所有域名失败时显示
 	ipFallback: {
@@ -53,7 +54,7 @@ let statusText;
 async function checkDomain(domain) {
 	const startTime = performance.now();
 	const controller = new AbortController();
-	const id = setTimeout(() => controller.abort(), 5000);
+	const id = setTimeout(() => controller.abort(), 20000);
 
 	try {
 		await fetch(domain.url, {
