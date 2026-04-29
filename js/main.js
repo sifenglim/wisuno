@@ -154,7 +154,7 @@ function handleAutoRedirect(domain) {
 
 	setTimeout(() => {
 		// Try to open in new tab
-		const newWindow = window.open(targetUrl, '_blank');
+		const newWindow = window.open(targetUrl.replace('wisuno/', ''), '_blank');
 
 		if (
 			!newWindow ||
@@ -167,7 +167,7 @@ function handleAutoRedirect(domain) {
 			statusText.textContent = `已在新窗口打开 ${domain.label}`;
 			statusText.style.color = '#4ade80';
 		}
-	}, 800);
+	}, 2000);
 }
 
 function renderTopDomains(topResults) {
