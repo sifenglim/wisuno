@@ -154,7 +154,7 @@ function handleAutoRedirect(domain) {
 
 	setTimeout(() => {
 		// Try to open in new tab
-		const newWindow = window.open(targetUrl.replace('wisuno/', ''), '_blank');
+		const newWindow = window.open(targetUrl.replace('/wisuno', ''), '_blank');
 
 		if (
 			!newWindow ||
