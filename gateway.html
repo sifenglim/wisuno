@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Wisuno Global Access | 智能线路选择</title>
-  <meta name="description" content="Wisuno 智能线路检测系统，自动为您选择最快访问站点。">
+  <title en="Wisuno Global Access | Smart Route Selection"
+        zh-cn="Wisuno Global Access | 智能线路选择">Wisuno Global Access | Smart Route Selection</title>
+  <meta name="description"
+        en="Wisuno smart route detection system, automatically selects the fastest site for you."
+        zh-cn="Wisuno 智能线路检测系统，自动为您选择最快访问站点。"
+        content="Wisuno smart route detection system, automatically selects the fastest site for you.">
   <meta name="theme-color" content="#0f172a">
   <!-- CSS -->
   <link rel="stylesheet" href="css/style.css">
@@ -23,12 +27,12 @@
     <div class="glass-panel">
       <header>
         <img src="images/logo.png" alt="Wisuno" class="logo-img">
-        <div class="subtitle">全球智能线路选择</div>
+        <div class="subtitle" en="Global Smart Route Selection" zh-cn="全球智能线路选择">Global Smart Route Selection</div>
       </header>
       <div class="content">
         <div class="loader-container">
           <div class="spinner"></div>
-          <div class="status-text">正在检测全网线路质量...</div>
+          <div class="status-text" en="Detecting network route quality..." zh-cn="正在检测全网线路质量...">Detecting network route quality...</div>
         </div>
         <div class="domain-list">
           <!-- JS Injected Content -->
@@ -36,9 +40,10 @@
         <!-- Error Module (Hidden by default) -->
         <div id="error-module" class="error-module">
           <div class="error-icon">⚠️</div>
-          <h3>网络连接异常</h3>
-          <p>无法连接到任何节点，请检查您的网络设置。</p>
-          <button onclick="location.reload()" class="retry-btn">重新检测</button>
+          <h3 en="Network Connection Error" zh-cn="网络连接异常">Network Connection Error</h3>
+          <p en="Unable to connect to any node. Please check your network settings."
+             zh-cn="无法连接到任何节点，请检查您的网络设置。">Unable to connect to any node. Please check your network settings.</p>
+          <button onclick="location.reload()" class="retry-btn" en="Retry Detection" zh-cn="重新检测">Retry Detection</button>
         </div>
       </div>
       <div class="footer">
